@@ -105,8 +105,11 @@ void CBigNumber::Add( unsigned long lAdd)
 }
 
 void  CBigNumber::Mul(unsigned long lMul)
-{
-	//低位加lAdd
+{	
+	//计算偏移位
+	int imul = 0;
+	unsigned long llMul = lMul;
+			
 	long iCurr;
 	iCurr = 0;
 	pUsed[iCurr] *= lMul;
@@ -140,23 +143,79 @@ void  CBigNumber::Mul(unsigned long lMul)
 
 		iNext = pUsed[iCurr] / MAXITEM;
 
-
 		pUsed[iCurr] = pUsed[iCurr] % MAXITEM;
 	}
 }
 
+void CBigNumber::MulMAXITEM(unsigned int iTimes)
+{	
+	if ((pValidCount + iTimes)>(pUsedCount - 1))
+		reNewAndSet();
+	pValidCount = pValidCount + iTimes;
+	for (int k =0, i = pValidCount; i >= iTimes; i--)
+	{
+		pUsed[pValidCount-k] = pUsed[pValidCount - iTimes-k];
+		k++;
+	}
+	for (int i = iTimes-1; i >= 0; i--)
+	{
+		pUsed[i] = 0;
+	}
+}
 
 void CBigNumber::printResu()
 {
+	CString str1 ;
+	str1 = "";
+	for (int i = 0; i < SINGLEITEM; i++)
+		str1 += "0";
+
+
 	for (int i = pValidCount; i >= 0; i--)
-		if (pUsed[i]==0)
-			printf("000");
+		if (pUsed[i] == 0)
+		{
+			switch (SINGLEITEM)
+			{
+			case 3:
+				printf("%03d", pUsed[i]);
+				break;
+			case 4:
+				printf("%04d", pUsed[i]);
+				break;
+			case 5:
+				printf("%05d", pUsed[i]);
+				break;
+			case 6:
+				printf("%06d", pUsed[i]);
+				break;
+			case 7:
+				printf("%07d", pUsed[i]);
+				break;
+			}
+		}			
 		else
 			if (i == pValidCount)
 				printf("%d", pUsed[i]);
 			else
-				printf("%03d", pUsed[i]);
-
+				switch (SINGLEITEM)
+				{
+				case 3:
+					printf("%03d", pUsed[i]);
+					break;
+				case 4:
+					printf("%04d", pUsed[i]);
+					break;
+				case 5:
+					printf("%05d", pUsed[i]);
+					break;
+				case 6:
+					printf("%06d", pUsed[i]);
+					break;
+				case 7:
+					printf("%07d", pUsed[i]);
+					break;
+				}				
+	
 }
 
 void CBigNumber::reNewAndSet(CBigNumber nPrev)
@@ -176,7 +235,7 @@ void CBigNumber::reNewAndSet()
 {
 	long lSize = pUsedCount * 2;	
 	if (lSize < 0)
-		throw "Result is too big,can not process!";
+		throw "Result must great than zero,can not process!";
 
 
 	unsigned long * pUsedNext = new unsigned long[lSize];
