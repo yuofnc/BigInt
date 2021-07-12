@@ -15,6 +15,8 @@ public:
 
 	void  Add(unsigned long lAdd);
 	void  Mul(unsigned long lMul);
+
+	void MulMAXITEM(unsigned int iTimes);
 	//void  Mul(CBigNumber ba, unsigned long lMul);
 	long getValidCount();
 	void printResu();
@@ -29,3 +31,4 @@ private:
 	unsigned long pUsedCount;  //占用位
 	unsigned long pValidCount; //已用位
 };
+
