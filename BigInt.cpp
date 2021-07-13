@@ -68,8 +68,37 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 			CBigNumber bResu;
 			bResu.Add(1);
 			for (long i = 1; i <= iCal;i++)
-				bResu.Mul(i);
-			bResu.printResu();			
+				bResu.Mul(i);	
+			printf("\r\n最后结果为1：\r\n");
+			
+			bResu.printResu();		
+			
+			
+			CBigNumber bResu2;
+			bResu2.Add(1);
+			for (long i = iCal + 1; i <= iCal + 12; i++)
+				bResu2.Mul(i);
+						
+			printf("\r\n最后结果为2：\r\n");
+			bResu2.printResu();
+			
+			bResu2.Mul(bResu);
+			printf("\r\n最后结果为2_Resu：\r\n");
+			bResu2.printResu();
+
+
+			CBigNumber bResu3;
+			bResu3.Add(1);
+			for (long i =  1; i <= iCal + 12; i++)
+				bResu3.Mul(i);
+
+			printf("\r\n最后结果为3：\r\n");
+			bResu3.printResu();
+
+
+			//bResu.Mul(1000);
+			//bResu.printResu();	
+			
 		}
 	}
 	else
@@ -80,4 +109,54 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 	}
 
 	return nRetCode;
+}
+
+void testCase1()
+{
+	long iIN = 0;
+
+	do
+	{
+		printf("1.计算7!\r\n");
+		printf("2.计算600!\r\n");
+		printf("3.计算n!\r\n");
+		scanf_s("%d", &iIN);
+		printf("你录入的是：%d\r\n", iIN);
+
+	} while ((iIN > 3) || (iIN < 1));
+	int iCal = 0;
+	switch (iIN)
+	{
+	case 1:
+		iCal = 7;
+		break;
+	case 2:
+		iCal = 600;
+		break;
+	case 3:
+		do
+		{
+			printf("1.计算n!,请录入n\r\n");
+			scanf_s("%ld", &iIN);
+			printf("你录入的是：%ld\r\n", iIN);
+
+		} while ((iIN < 1) || (iIN > 1000000));
+		iCal = iIN;
+		break;
+	}
+	CBigNumber bResu;
+	bResu.Add(1);
+	for (long i = 1; i <= iCal; i++)
+		bResu.Mul(i);
+	printf("最后结果为：\r\n");
+	bResu.printResu();
+	CBigNumber bResu2;
+	bResu2.Add(1);
+	for (long i = 1; i <= iCal; i++)
+		bResu2.Mul(i);
+	printf("最后结果为：\r\n");
+	bResu2.printResu();
+	bResu.Add(bResu2);
+	printf("最后结果为：\r\n");
+	bResu.printResu();
 }
