@@ -46,6 +46,19 @@ CBigNumber::~CBigNumber()
 	delete[]pUsed;
 }
 
+void CBigNumber::setNumber(CBigNumber &cNumSource)
+{
+	if (pUsedCount < cNumSource.getUsedCount())
+	{
+		delete[]pUsed;
+		pUsed = new unsigned long[cNumSource.getUsedCount()];
+		pUsedCount = cNumSource.getUsedCount();
+	}
+	ZeroMemory(pUsed, sizeof(unsigned long)*pUsedCount);
+	memcpy(pUsed, cNumSource.pUsed, (cNumSource.getValidCount() + 1)*sizeof(unsigned long));
+	pValidCount = cNumSource.getValidCount();
+}
+
 void CBigNumber::setNumber(unsigned long lset)
 {
 	long i = lset / SINGLEITEM;
@@ -254,9 +267,10 @@ void  CBigNumber::Mul(CBigNumber &cNumSource)
 	}	
 	lShift = lZero;
 	long lBegin = 0;
+	CBigNumber cNumber2 = CBigNumber(cNumbebPrev);
 	do
 	{		
-		CBigNumber cNumber2 = CBigNumber(cNumbebPrev);
+		cNumber2.setNumber(cNumbebPrev);
 		if (lShift > 0)
 			cNumber2.MulMAXITEM(lShift);
 		cNumber2.Mul(cNumber.pUsed[lBegin]);
@@ -278,11 +292,11 @@ void  CBigNumber::Mul(CBigNumber &cNumSource)
 		Add(cNumber2);
 		if ((cNumber.pValidCount == lBegin) && (cNumber.pUsed[lBegin] > 0))
 		{			
-			CBigNumber cNumberLast = CBigNumber(cNumbebPrev);
+			cNumber2.setNumber(cNumbebPrev);
 			if (lShift > 0)
-				cNumberLast.MulMAXITEM(lShift);
-			cNumberLast.Mul(cNumber.pUsed[lBegin]);
-			Add(cNumberLast);
+				cNumber2.MulMAXITEM(lShift);
+			cNumber2.Mul(cNumber.pUsed[lBegin]);
+			Add(cNumber2);
 			return;
 		}
 
