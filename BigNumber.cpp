@@ -253,54 +253,41 @@ void  CBigNumber::Mul(CBigNumber &cNumSource)
 		}
 	}	
 	lShift = lZero;
+	long lBegin = 0;
 	do
 	{		
 		CBigNumber cNumber2 = CBigNumber(cNumbebPrev);
 		if (lShift > 0)
 			cNumber2.MulMAXITEM(lShift);
-		cNumber2.Mul(cNumber.pUsed[0]);
+		cNumber2.Mul(cNumber.pUsed[lBegin]);
 
-		cNumber.pUsed[0] = 0;
+		cNumber.pUsed[lBegin] = 0;
 
 		pSource = cNumber.pUsed;
 		l1Count = cNumber.getValidCount();
 		lZero = 0;
-		for (long i = 0; i < l1Count; i++)
+		for (long i = lBegin; i < l1Count; i++)
 		{
 			if (pSource[i] == 0)
 				lZero++;
 			else
 				break;
 		}
-
-		if (lZero > 0)
-		{			
-			for (long i = 0; i <= (cNumber.getValidCount() - lZero); i++)
-			{
-				cNumber.pUsed[i] = cNumber.pUsed[i + lZero];
-			}
-			for (long i = cNumber.getValidCount(); i >(cNumber.getValidCount() - lZero); i--)
-			{
-				cNumber.pUsed[i] = 0;
-			}
-			cNumber.SetValidCount(cNumber.getValidCount() - lZero);						
-		
-		}
+		lBegin += lZero;		
 		lShift += lZero;
 		Add(cNumber2);
-		if ((cNumber.pValidCount == 0) && (cNumber.pUsed[0] > 0))
-		{
+		if ((cNumber.pValidCount == lBegin) && (cNumber.pUsed[lBegin] > 0))
+		{			
 			CBigNumber cNumberLast = CBigNumber(cNumbebPrev);
 			if (lShift > 0)
 				cNumberLast.MulMAXITEM(lShift);
-			cNumberLast.Mul(cNumber.pUsed[0]);
+			cNumberLast.Mul(cNumber.pUsed[lBegin]);
 			Add(cNumberLast);
 			return;
-
 		}
 
 		
-	} while (cNumber.pValidCount >= 0);
+	} while (cNumber.pValidCount >= lBegin);
 }
 
 void CBigNumber::MulMAXITEM(unsigned int iTimes)
