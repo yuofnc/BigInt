@@ -13,6 +13,7 @@ public:
 	CBigNumber(CBigNumber &cNumSource);
 	virtual ~CBigNumber();
 	void setNumber(unsigned long lset);
+	void setNumber(CBigNumber &cNumSource);
 	CBigNumber copyNumber(CBigNumber &cNumSource);
 	void  Add(unsigned long lAdd);
 	void  Add(CBigNumber &cNumSource);
@@ -37,3 +38,4 @@ private:
 	unsigned long pUsedCount;  //占用位
 	unsigned long pValidCount; //已用位
 };
+
