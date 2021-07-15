@@ -6,7 +6,7 @@ CBigNumber::CBigNumber()
 {
 	pUsedCount = MAXLENGTH;
 	pUsed = new unsigned long[pUsedCount];
-	ZeroMemory(pUsed, sizeof(unsigned long)*pUsedCount);
+	ZeroMemory((char *)pUsed, sizeof(unsigned long)*pUsedCount);
 	pValidCount = 0;
 
 }
@@ -17,13 +17,13 @@ CBigNumber::CBigNumber(long lSize)
 	{
 		pUsedCount = MAXLENGTH;
 		pUsed = new unsigned long[pUsedCount];
-		ZeroMemory(pUsed, sizeof(unsigned long)*pUsedCount);
+		ZeroMemory((char *)pUsed, sizeof(unsigned long)*pUsedCount);
 		pValidCount = 0;
 		return;
 	}	
 	pUsedCount = lSize;
 	pUsed = new unsigned long[lSize];
-	ZeroMemory(pUsed, sizeof(unsigned long)*lSize);
+	ZeroMemory((char *)pUsed, sizeof(unsigned long)*lSize);
 	pValidCount = 0;
 
 }
@@ -33,9 +33,9 @@ CBigNumber::CBigNumber(CBigNumber &cNumSource)
 	long lSize = cNumSource.getUsedCount();
 	pUsedCount = lSize;
 	pUsed = new unsigned long[lSize];
-	ZeroMemory(pUsed, sizeof(unsigned long)*lSize);	
+	ZeroMemory((char *)pUsed, sizeof(unsigned long)*lSize);
 	
-	memcpy(pUsed, cNumSource.pUsed, (cNumSource.getValidCount()+1)*sizeof(unsigned long));
+	memcpy((char *)pUsed, (char *)cNumSource.pUsed, (cNumSource.getValidCount()+1)*sizeof(unsigned long));
 	
 	pValidCount = cNumSource.getValidCount();
 	return;
@@ -54,25 +54,43 @@ void CBigNumber::setNumber(CBigNumber &cNumSource)
 		pUsed = new unsigned long[cNumSource.getUsedCount()];
 		pUsedCount = cNumSource.getUsedCount();
 	}
-	ZeroMemory(pUsed, sizeof(unsigned long)*pUsedCount);
-	memcpy(pUsed, cNumSource.pUsed, (cNumSource.getValidCount() + 1)*sizeof(unsigned long));
+	ZeroMemory((char *)pUsed, sizeof(unsigned long)*pUsedCount);
+	memcpy((char *)pUsed, (char *)cNumSource.pUsed, (cNumSource.getValidCount() + 1)*sizeof(unsigned long));
 	pValidCount = cNumSource.getValidCount();
 }
 
-void CBigNumber::setNumber(unsigned long lset)
+void CBigNumber::setNumber(CBigNumber &cNumSource, long lSize)
 {
-	long i = lset / SINGLEITEM;
-	if (i*SINGLEITEM < lset)
+	if (pUsedCount < cNumSource.getUsedCount())
+	{
+		delete[]pUsed;
+		pUsed = new unsigned long[cNumSource.getUsedCount()];
+		pUsedCount = cNumSource.getUsedCount();
+	}
+	ZeroMemory((char *)pUsed, sizeof(unsigned long)*pUsedCount);
+	memcpy((char *)pUsed, (char *)cNumSource.pUsed+ (cNumSource.getValidCount()+1- lSize)*sizeof(unsigned long), lSize*sizeof(unsigned long));
+	pValidCount = lSize-1;
+}
+
+void CBigNumber::setNumber(unsigned long lset)
+{	
+	unsigned long lPrev = lset;
+	long i=0;
+	do
+	{
+		lPrev = lPrev / MAXITEM;
 		i++;
-	ZeroMemory(pUsed, sizeof(unsigned long)*pUsedCount);
+	} while (lPrev>0);
+
+	ZeroMemory((char *)pUsed, sizeof(unsigned long)*pUsedCount);
 	unsigned long * pCurr;
-	for (long k = 0; k < i; k++)
+	for (long k = 0; k <= i; k++)
 	{
 		//pCurr = pUsed+k;
 		pUsed[k] = lset % MAXITEM;
 		lset = lset / MAXITEM;
 	}
-	pValidCount = i;
+	pValidCount = i-1;
 	return;
 }
 
@@ -183,36 +201,37 @@ void  CBigNumber::Mul(unsigned long lMul)
 	pUsed[iCurr] *= lMul;
 	if ((pUsed[iCurr] < MAXITEM) && (iCurr == pValidCount))
 		return;
-	long iNext = 0;
-	iNext = pUsed[iCurr] / MAXITEM;
-	pUsed[iCurr] = pUsed[iCurr] % MAXITEM;
-	bool bNotMull = false;
-	while (true)
+	for (long lCount = 1; lCount <= pValidCount;lCount++)
+		pUsed[lCount] *= lMul;
+	long lNext = 0;
+	for (long lCount = 0; lCount <= pValidCount; lCount++)
 	{
-		iCurr++;
-		if (iCurr > (pUsedCount - 1))
+		pUsed[lCount] += lNext;
+		lNext = 0;
+		if (pUsed[lCount] > MAXITEM)
 		{
-			reNewAndSet();
+			lNext = pUsed[lCount] / MAXITEM;
+			pUsed[lCount] = pUsed[lCount] % MAXITEM;
 		}
-		if (iCurr > pValidCount)
-		{
-			bNotMull = true;
-			pValidCount = iCurr;
-		}
-		if (!bNotMull)
-			pUsed[iCurr] *= lMul;
-		pUsed[iCurr] += iNext;	
-		
-			
-		if ((pUsed[iCurr] < MAXITEM) && (iCurr == pValidCount))
-		{			
-			return;
-		}
-
-		iNext = pUsed[iCurr] / MAXITEM;
-
-		pUsed[iCurr] = pUsed[iCurr] % MAXITEM;
 	}
+	if (lNext > 0)
+	{
+		pValidCount++;
+		do
+		{
+			pUsed[pValidCount] += lNext;
+			if (pUsed[pValidCount] > MAXITEM)
+			{
+				lNext = pUsed[pValidCount] / MAXITEM;
+				pUsed[pValidCount] = pUsed[pValidCount] % MAXITEM;
+				pValidCount++;
+			}
+			else
+				break;
+
+		} while (true);
+	}
+	
 }
 
 void  CBigNumber::Mul(CBigNumber &cNumSource)
@@ -299,9 +318,258 @@ void  CBigNumber::Mul(CBigNumber &cNumSource)
 			Add(cNumber2);
 			return;
 		}
-
 		
 	} while (cNumber.pValidCount >= lBegin);
+}
+
+int CBigNumber::Sub(CBigNumber &cNumSource)
+{
+	//够减返回0
+	//其余返回1
+	//最高位减1
+	if (pValidCount < cNumSource.getValidCount())
+		return 1;
+	if (pValidCount == cNumSource.getValidCount())
+	{
+		if (pValidCount == 0)
+		{
+			if (pUsed[0] >= cNumSource.pUsed[0])
+			{
+				pUsed[0] -= cNumSource.pUsed[0];
+				return 0;
+			}
+			else
+				return 1;
+		}
+		pUsed[pValidCount]--;		 
+		//剩余位增加
+		for (long lsize = 0; lsize < pValidCount; lsize++)
+		{
+			if (lsize ==0)
+				pUsed[lsize] += MAXITEM ;
+			else
+				pUsed[lsize] += (MAXITEM - 1);
+		}
+			
+		//减法运算
+		for (long lsize = 0; lsize < pValidCount; lsize++)
+			pUsed[lsize] -= cNumSource.pUsed[lsize];
+		for (long lsize = 0; lsize < pValidCount; lsize++)
+		{
+			if (pUsed[lsize] >= MAXITEM)
+			{
+				pUsed[lsize] -= MAXITEM;
+				pUsed[lsize + 1]++;
+			}
+		}
+		if (pUsed[pValidCount] < cNumSource.pUsed[pValidCount])
+			return 1;
+		pUsed[pValidCount] -= cNumSource.pUsed[pValidCount];
+		long lsize = pValidCount;
+		for (lsize = pValidCount; lsize > 0; lsize--)
+		{
+			if (pUsed[lsize] > 0)
+				break;
+
+		}			
+		pValidCount = lsize;
+		return 0;
+	}
+	long lSourceCount = cNumSource.getValidCount();
+	pUsed[pValidCount]--;
+	//剩余位增加
+	for (long lsize = 0; lsize < pValidCount; lsize++)
+	{
+		if (lsize == 0)
+			pUsed[lsize] += MAXITEM;
+		else
+			pUsed[lsize] += (MAXITEM - 1);
+	}
+	//减法运算	
+	for (long lsize = 0; lsize < lSourceCount+1; lsize++)
+		pUsed[lsize] -= cNumSource.pUsed[lsize];
+	for (long lsize = 0; lsize < pValidCount; lsize++)
+	{
+		if (pUsed[lsize] > MAXITEM)
+		{
+			pUsed[lsize] -= MAXITEM;
+			pUsed[lsize + 1]++;
+		}
+	}
+	long lsize = pValidCount;
+	for (lsize = pValidCount; lsize >= 0; lsize--)
+	{
+		if (pUsed[lsize] > 0)
+			break;
+	}		
+	pValidCount = lsize;
+	return 0;	
+}
+
+
+void  CBigNumber::Div(unsigned long lDiv)
+{
+	
+	//计算位数
+	unsigned long lTemp = lDiv;
+	unsigned long lLen = 0;
+	while (lTemp > 0)
+	{
+		lTemp = lTemp / 10;
+		lLen++;
+	}
+	long lFirst = 0;
+	lTemp = pUsed[pValidCount];
+	while (lTemp > 0)
+	{
+		lTemp = lTemp / 10;
+		lFirst++;
+	}
+	if ((pValidCount*SINGLEITEM+lFirst)<lLen)
+	{
+		//不够除
+		setNumber(0);
+		return;
+	}
+	/*
+	lTemp = lDiv;
+	lLen = 0;
+	while (lTemp > 0)
+	{
+	lTemp = lTemp / 10;
+	lLen++;
+	if (lLen == pValidCount*SINGLEITEM)
+	break;
+	}
+	if (lTemp > pUsed[pValidCount])
+	{
+	//不够除
+	setNumber(0);
+	return;
+	}
+	*/
+	CBigNumber cNumber = CBigNumber(*this);
+	CBigNumber cNumber2 = CBigNumber(*this);
+	CBigNumber CNumberProc = CBigNumber();
+	CBigNumber cNumberResu = CBigNumber();
+	unsigned long uCalSource = 0;
+	unsigned long uCalDest = 0;
+	do
+	{
+		long lSource = 0; //当前总运算位
+		long lSourceCount = 0; //当前运算位数
+		cNumber.setNumber(*this);
+		cNumber2.setNumber(*this);
+		CNumberProc.setNumber(lDiv);
+		cNumber2.setNumber(*this, CNumberProc.getValidCount() + 1);
+		long iDiv = 0;
+		if (cNumber2.pUsed[cNumber2.getValidCount()] <= CNumberProc.pUsed[CNumberProc.getValidCount()])
+		{
+			lSourceCount = CNumberProc.getValidCount() + 1 + 1;
+			cNumber2.setNumber(*this, CNumberProc.getValidCount() + 2);				
+			pValidCount = pValidCount - CNumberProc.getValidCount() - 1;
+			lSource = pValidCount;
+			ZeroMemory((char *)pUsed + (pValidCount)*sizeof(unsigned long), (CNumberProc.getValidCount() + 2)*sizeof(unsigned long));
+			uCalSource = ConvNumber(cNumber2);
+			uCalDest = ConvNumber(CNumberProc);
+			iDiv = uCalSource / uCalDest;
+		}
+		else
+		{
+			lSourceCount = CNumberProc.getValidCount() + 1;
+			pValidCount = pValidCount - CNumberProc.getValidCount();
+			ZeroMemory((char *)pUsed + (pValidCount)*sizeof(unsigned long), (CNumberProc.getValidCount() + 1)*sizeof(unsigned long));
+			lSource = pValidCount;
+			uCalSource = ConvNumber(cNumber2);
+			uCalDest = ConvNumber(CNumberProc);
+			iDiv = uCalSource / uCalDest;
+		}
+
+
+		CBigNumber cNumber3 = CBigNumber(CNumberProc);
+		CBigNumber cNumber2Copy = CBigNumber(cNumber2);
+		CNumberProc.setNumber(cNumber3);
+		CNumberProc.Mul(iDiv);
+
+		
+		//按位相减
+		do
+		{
+			if (cNumber2.Sub(CNumberProc) == 0)
+				break;
+			else
+			{
+				iDiv--;
+				CNumberProc.setNumber(cNumber3);
+				CNumberProc.Mul(iDiv);
+				cNumber2.setNumber(cNumber2Copy);
+			}
+		} while (true);
+		//结果回写
+		for (long lw = cNumber2.getValidCount(); lw >= 0; lw--)
+		{
+			pUsed[pValidCount + lw] = cNumber2.pUsed[lw];
+		}
+		
+		pValidCount += cNumber2.getValidCount();		
+		for (long lw = pValidCount; lw >= 0; lw--)
+		{
+			if (pUsed[pValidCount] == 0)
+				pValidCount--;
+		}
+
+		//iDiv保存到结果
+		cNumberResu.pUsed[lSource] = iDiv;
+		if (cNumberResu.getValidCount() == 0)
+			cNumberResu.SetValidCount(lSource);
+
+		cNumber2.setNumber(*this);
+
+
+		//pUsed[lSource - 1 - CNumberProc.getValidCount()] = iDiv;
+		//cNumber2.setNumber(*this, CNumberProc.getValidCount() + 1);
+		//如果除后结果比被除数小
+		CNumberProc.setNumber(cNumber3);
+		cNumber2Copy.setNumber(cNumber2);
+		bool bSmall = false;
+		if (cNumber2.getValidCount() < CNumberProc.getValidCount())
+			bSmall = true;
+		if (!bSmall)
+		{
+			if (cNumber2.getValidCount() == CNumberProc.getValidCount())
+			{
+				if (cNumber2.pUsed[cNumber2.getValidCount()]<CNumberProc.pUsed[cNumber2.getValidCount()])
+					bSmall = true;
+				else
+				{
+					if (cNumber2.Sub(CNumberProc) == 0)
+					{
+						if ((cNumber2.getValidCount() == 0) && (cNumber2.pUsed[0] == 0))
+						{							
+							cNumberResu.pUsed[0] = 1;
+							setNumber(cNumberResu);
+							return;
+						}
+					}
+					else
+						bSmall = true;
+				}
+			}
+		}
+		
+		
+		
+		if (bSmall)
+		{			
+			setNumber(cNumberResu);
+			return;
+		}
+	} while (true);
+	
+
+	//填充结果
+	//计算结果后补的零个数
+	//改变除数  （除数/被除数 = resu）
 }
 
 void CBigNumber::MulMAXITEM(unsigned int iTimes)
@@ -380,7 +648,7 @@ void CBigNumber::reNewAndSet(CBigNumber nPrev)
 	long lSize = nPrev.pUsedCount * 2;	
 	delete[]pUsed;
 	pUsed = new unsigned long[lSize];
-	ZeroMemory(pUsed, sizeof(unsigned long)*lSize);
+	ZeroMemory((char *)pUsed, sizeof(unsigned long)*lSize);
 	for (long lSet = 0; lSet < nPrev.pUsedCount; lSet++)
 		pUsed[lSet] = nPrev.pUsed[lSet];
 	pUsedCount = lSize;  //占用位
@@ -391,7 +659,7 @@ void CBigNumber::reNewAndSet(CBigNumber nPrev)
 void CBigNumber::reNewAndSet(long lSize)
 {
 	unsigned long * pUsedNext = new unsigned long[lSize];
-	ZeroMemory(pUsedNext, sizeof(unsigned long)*lSize);
+	ZeroMemory((char *)pUsedNext, sizeof(unsigned long)*lSize);
 	for (long lSet = 0; lSet < pUsedCount; lSet++)
 		pUsedNext[lSet] = pUsed[lSet];
 	pUsedCount = lSize;  //占用位
@@ -407,6 +675,19 @@ void CBigNumber::reNewAndSet()
 
 	reNewAndSet(lSize);	
 	return;
+}
+
+unsigned long CBigNumber::ConvNumber(CBigNumber &NumSource)
+{
+	unsigned long lResu = 0;
+	if (NumSource.getValidCount()>5)
+		throw "Result too big,can not process!";
+	for (int i = NumSource.getValidCount(); i >= 0; i--)
+	{
+		lResu *= MAXITEM;
+		lResu += NumSource.pUsed[i];
+	}
+	return lResu;
 }
 
 long CBigNumber::getValidCount()
