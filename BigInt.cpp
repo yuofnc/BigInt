@@ -80,12 +80,10 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 				bResu2.Mul(i);
 						
 			printf("\r\n最后结果为2：\r\n");
-			bResu2.printResu();
+			bResu2.printResu();			
 			
-			bResu2.Mul(bResu);
 			printf("\r\n最后结果为2_Resu：\r\n");
-			bResu2.printResu();
-
+			bResu2.printResu();			
 
 			CBigNumber bResu3;
 			bResu3.Add(1);
@@ -94,11 +92,147 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 
 			printf("\r\n最后结果为3：\r\n");
 			bResu3.printResu();
+			
+			
+			CBigNumber bResu5;
+			CBigNumber bResu6;
+			CBigNumber bTemp;
+			long lMul = 1159;
+			bool bTest = true;
+			/*
+			for (int k = 1; k < 300; k++)
+			{
+			lMul = rand() % 10000;
+			if (lMul < 1000)
+			lMul += 1000;
+			bResu5.setNumber(lMul);
+			bResu5.Mul(1000);
+			bResu5.Mul(1000);
+			bResu5.Mul(1059);
+			bResu5.Mul(1033);
+			bTest = true;
+			for (int i = 33; i < 36 + (rand() % 10); i++)
+			bResu5.Mul(i + (rand() % 100));
+
+			bResu5.Mul(97);
+			bResu5.Mul(196);
+			bResu5.Add(lMul);
+
+			printf("\r\n除数为：\r\n");
+			bResu5.printResu();
+			bTemp.setNumber(bResu5);
+			bResu6.setNumber(bResu5);
+
+			bResu5.Div(lMul);
+			printf("\r\n结果为：\r\n");
+			bResu5.printResu();
+
+			bResu5.Mul(lMul);
+			if (bResu6.Sub(bResu5) == 0)
+			{
+			if (bResu6.getValidCount() > 0)
+			{
+			printf("\r\n%出错了：\r\n");
+			bResu6.printResu();
+			bTest = false;
+			break;
+			}
+			if (bResu6.pUsed[0] > 0)
+			{
+			printf("\r\n%出错了：\r\n");
+			bResu6.printResu();
+			bTest = false;
+			break;
+			}
+			}
+			else
+			{
+			printf("\r\n%出错了：\r\n");
+			bResu6.printResu();
+			bTest = false;
+			break;
+			}
+
+			printf("\r\n%结果为：\r\n");
+			bResu5.printResu();
+			}
+			if (!bTest)
+			{
+			bResu5.setNumber(bTemp);
+			printf("\r\n%出错结果为：\r\n");
+			bResu5.printResu();
+
+			bResu5.Div(lMul);
+			printf("\r\n除以%d结果为：\r\n",lMul);
+			bResu5.printResu();
+			bResu5.Mul(lMul);
+
+			printf("\r\n%还原结果为：\r\n");
+			bResu5.printResu();
 
 
+			}
+			*/
+			
+			//
 			//bResu.Mul(1000);
 			//bResu.printResu();	
 			
+			for (int i = 1; i < 300; i++)
+			{
+				bTest = true;
+				bResu6.setNumber(11571+i);
+
+				for (int i = 1; i < 500; i++)
+					bResu6.Mul(i+ rand() % 10);
+				bResu6.Mul(519);
+				bResu6.Add(135);
+
+				bResu5.setNumber(bResu6);
+
+				bTemp.setNumber(379);
+				for(int k=1;k<30;k++)
+					bTemp.Mul(379+rand()%100);
+				//for (int i = 0; i < 100; i++)
+				//	bTemp.Mul(i);
+				bResu2.setNumber(bResu5);
+				
+				bTest = true;
+				bResu5.setNumber(bResu2);
+				bResu5.Mul(bTemp);
+
+				bResu5.Div(bTemp);
+				if (bResu5.Sub(bResu2) == 0)
+				{
+					if ((bResu5.getValidCount() == 0) && (bResu5.pUsed[0] == 0))
+						printf("\r\n结果正确！\r\n");
+					else
+					{
+						bResu5.setNumber(bResu2);
+						bResu5.Mul(bTemp);
+
+						bResu5.Div(bTemp);
+						bTest = false;
+						break;
+					}
+						
+				}
+				else
+				{
+					bResu5.setNumber(bResu2);
+					bResu5.Mul(bTemp);
+
+					bResu5.Div(bTemp);
+					bTest = false;
+					break;
+				}					
+			}
+			
+			
+			if (!bTest)
+			{
+				printf("\r\n结果错误！\r\n");
+			}
 		}
 	}
 	else
