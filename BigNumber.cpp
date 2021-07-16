@@ -329,9 +329,9 @@ int CBigNumber::Sub(CBigNumber &cNumSource)
 	//最高位减1
 	if (pValidCount < cNumSource.getValidCount())
 		return 1;
+	long lDiv = 0;
 	if (pValidCount == cNumSource.getValidCount())
-	{
-		if (pValidCount == 0)
+	{			if (pValidCount == 0)
 		{
 			if (pUsed[0] >= cNumSource.pUsed[0])
 			{
@@ -356,12 +356,17 @@ int CBigNumber::Sub(CBigNumber &cNumSource)
 			pUsed[lsize] -= cNumSource.pUsed[lsize];
 		for (long lsize = 0; lsize < pValidCount; lsize++)
 		{
+			if (lsize == 199)
+			{
+				int test = 0;
+			}
 			if (pUsed[lsize] >= MAXITEM)
 			{
-				pUsed[lsize] -= MAXITEM;
-				pUsed[lsize + 1]++;
+				lDiv = pUsed[lsize] / MAXITEM;
+				pUsed[lsize] -= MAXITEM*lDiv;
+				pUsed[lsize + 1]+= lDiv;
 			}
-		}
+		}		
 		if (pUsed[pValidCount] < cNumSource.pUsed[pValidCount])
 			return 1;
 		pUsed[pValidCount] -= cNumSource.pUsed[pValidCount];
@@ -386,14 +391,15 @@ int CBigNumber::Sub(CBigNumber &cNumSource)
 			pUsed[lsize] += (MAXITEM - 1);
 	}
 	//减法运算	
-	for (long lsize = 0; lsize < lSourceCount+1; lsize++)
+	for (long lsize = 0; lsize <= lSourceCount; lsize++)
 		pUsed[lsize] -= cNumSource.pUsed[lsize];
 	for (long lsize = 0; lsize < pValidCount; lsize++)
 	{
-		if (pUsed[lsize] > MAXITEM)
+		if (pUsed[lsize] >= MAXITEM)
 		{
-			pUsed[lsize] -= MAXITEM;
-			pUsed[lsize + 1]++;
+			lDiv = pUsed[lsize] / MAXITEM;
+			pUsed[lsize] -= MAXITEM*lDiv;
+			pUsed[lsize + 1] += lDiv;
 		}
 	}
 	long lsize = pValidCount;
@@ -570,6 +576,140 @@ void  CBigNumber::Div(unsigned long lDiv)
 	//填充结果
 	//计算结果后补的零个数
 	//改变除数  （除数/被除数 = resu）
+}
+
+void CBigNumber::Div(CBigNumber &cNumSource)
+{
+	if (cNumSource.pValidCount <= 2)
+	{
+		unsigned long uCalSource = ConvNumber(cNumSource);
+		return Div(uCalSource);
+	}
+	CBigNumber cResult;
+	CBigNumber cDiv;
+	CBigNumber cDivPrev;
+
+
+	CBigNumber cSave;
+	cSave.setNumber(*this);
+
+	CBigNumber cTemp;
+	CBigNumber cTemp2;
+	CBigNumber cTemp3;
+	do
+	{
+		cDiv.setNumber(0);
+		cDiv.SetValidCount(cNumSource.getValidCount());
+		long lBit = cNumSource.getValidCount();
+
+		for (int i = 0; i <= 1; i++)
+		{
+			cDiv.pUsed[lBit] = cNumSource.pUsed[lBit];
+			lBit--;
+		}
+
+		unsigned long lCalSource = 0;
+		lBit = pValidCount;
+		for (int i = 0; i <= 2; i++)
+		{
+			lCalSource *= MAXITEM;
+			lCalSource += pUsed[lBit];
+			lBit--;
+		}
+		unsigned long lCalDest = 0;
+		lCalDest = 0;
+		lBit = cDiv.getValidCount();
+		for (int i = 0; i <= 1; i++)
+		{
+			lCalDest *= MAXITEM;
+			if (i == 1)
+			{
+				lCalDest += 999;
+			}
+			else
+				lCalDest += cDiv.pUsed[lBit];
+			lBit--;
+		}
+		//除最高位
+		long lResu = lCalSource / lCalDest;		
+		cTemp.setNumber(cNumSource);
+		cTemp.Mul(lResu);
+		long lShift = (pValidCount - cNumSource.getValidCount() - 1);
+		if ((pValidCount - cNumSource.getValidCount() - 1)>0)
+			cTemp.MulMAXITEM(pValidCount-cNumSource.getValidCount()-1);
+		cTemp2.setNumber(*this);
+		if (Sub(cTemp) == 0)
+		{
+			cTemp3.setNumber(lResu);
+			if ((lShift)>0)
+				cTemp3.MulMAXITEM(lShift);
+			cResult.Add(cTemp3);
+		}
+		else
+		{
+			setNumber(cTemp2);
+			break;
+		}
+			
+	} while (pValidCount > cNumSource.getValidCount());
+	for (long lResu = 10000; lResu >= 10; lResu /= 10)
+	{
+		cTemp.setNumber(cNumSource);
+		cTemp.Mul(lResu);
+		do
+		{
+			cTemp2.setNumber(*this);
+			if (Sub(cTemp) == 0)
+			{
+				cResult.Add(lResu);
+			}
+			else
+			{
+				setNumber(cTemp2);
+				break;
+			}
+		} while (true);
+	}
+
+	do
+	{
+		cTemp2.setNumber(*this);
+		if (Sub(cNumSource) == 0)
+		{
+			cResult.Add(1);
+		}
+		else
+		{
+			setNumber(cTemp2);
+			break;
+		}
+			
+	} while (true);
+
+	
+	/*
+	printf("\r\n--------------------------------------\r\n");
+
+	printf("\r\n被除数为：\r\n");
+	cSave.printResu();
+	printf("\r\n最后结果为：\r\n");
+	cResult.printResu();
+	printf("\r\n当前数：\r\n");
+	printResu();
+	printf("\r\n除数为：\r\n");
+	cNumSource.printResu();
+
+
+	CBigNumber cCheck;
+	cCheck.setNumber(cNumSource);
+	cCheck.Mul(cResult);
+	cCheck.Add(*this);
+
+	printf("\r\ns校验数为：\r\n");
+	cCheck.printResu();
+
+	*/
+	setNumber(cResult);
 }
 
 void CBigNumber::MulMAXITEM(unsigned int iTimes)
