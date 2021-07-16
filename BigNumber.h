@@ -25,6 +25,8 @@ public:
 
 	void Div(unsigned long lDiv);
 
+	void Div(CBigNumber &cNumSource);
+
 	int Sub(CBigNumber &cNumSource);
 
 	void MulMAXITEM(unsigned int iTimes);
