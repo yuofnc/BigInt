@@ -194,21 +194,40 @@ CBigNumber copyNumber(CBigNumber &cNumSource)
 void  CBigNumber::Mul(unsigned long lMul)
 {	
 	//计算偏移位	
+	if (((pValidCount + 20)) > pUsedCount)
+		reNewAndSet();
 	unsigned long llMul = lMul;
 			
 	long iCurr;
+	long lNext = 0;
 	iCurr = 0;
 	pUsed[iCurr] *= lMul;
 	if ((pUsed[iCurr] < MAXITEM) && (iCurr == pValidCount))
 		return;
-	for (long lCount = 1; lCount <= pValidCount;lCount++)
+	for (long lCount = 1; lCount <= pValidCount; lCount++)
+	{
+		if (lCount == pValidCount)
+		{
+		
+		}
+		else
+		{
+			if (pUsed[lCount] >= MAXITEM)
+			{
+				lNext = pUsed[lCount] / MAXITEM;
+				pUsed[lCount] %= MAXITEM;
+				pUsed[lCount + 1] += lNext;
+			}
+		}
+		
 		pUsed[lCount] *= lMul;
-	long lNext = 0;
+	}		
+	lNext = 0;
 	for (long lCount = 0; lCount <= pValidCount; lCount++)
 	{
 		pUsed[lCount] += lNext;
 		lNext = 0;
-		if (pUsed[lCount] > MAXITEM)
+		if (pUsed[lCount] >= MAXITEM)
 		{
 			lNext = pUsed[lCount] / MAXITEM;
 			pUsed[lCount] = pUsed[lCount] % MAXITEM;
@@ -220,7 +239,7 @@ void  CBigNumber::Mul(unsigned long lMul)
 		do
 		{
 			pUsed[pValidCount] += lNext;
-			if (pUsed[pValidCount] > MAXITEM)
+			if (pUsed[pValidCount] >= MAXITEM)
 			{
 				lNext = pUsed[pValidCount] / MAXITEM;
 				pUsed[pValidCount] = pUsed[pValidCount] % MAXITEM;
@@ -251,14 +270,12 @@ void  CBigNumber::Mul(CBigNumber &cNumSource)
 		else
 			break;
 	}
-	long lSize = l1Count+pValidCount+2;
+	unsigned long lSize = l1Count+pValidCount+2;
 	if (lSize < 0)
 		throw("Result is too big, can not calculate!");
 	if (lSize > pUsedCount)
-	{
-		if ((long)(lSize / 1024) * 1024 < lSize)
-			lSize = (long)(lSize /1024 + 1) * 1024;
-		reNewAndSet(lSize);
+	{		
+		reNewAndSet(pUsedCount*2);
 	}
 	CBigNumber cNumber = CBigNumber(cNumSource);
 	//移位
@@ -525,9 +542,21 @@ void  CBigNumber::Div(unsigned long lDiv)
 		}
 
 		//iDiv保存到结果
-		cNumberResu.pUsed[lSource] = iDiv;
-		if (cNumberResu.getValidCount() == 0)
-			cNumberResu.SetValidCount(lSource);
+		if (iDiv >= MAXITEM)
+		{
+			cNumberResu.pUsed[lSource] = iDiv%MAXITEM;
+			cNumberResu.pUsed[lSource + 1] = iDiv / MAXITEM;
+			if (cNumberResu.getValidCount() == 0)
+					cNumberResu.SetValidCount(lSource+1);
+		}
+		else
+		{
+			cNumberResu.pUsed[lSource] = iDiv%MAXITEM;			
+			if (cNumberResu.getValidCount() == 0)
+				cNumberResu.SetValidCount(lSource );
+		}
+		
+		
 
 		cNumber2.setNumber(*this);
 
@@ -580,15 +609,13 @@ void  CBigNumber::Div(unsigned long lDiv)
 
 void CBigNumber::Div(CBigNumber &cNumSource)
 {
-	if (cNumSource.pValidCount <= 2)
+	if (cNumSource.pValidCount <= 1)
 	{
 		unsigned long uCalSource = ConvNumber(cNumSource);
 		return Div(uCalSource);
 	}
 	CBigNumber cResult;
 	CBigNumber cDiv;
-	CBigNumber cDivPrev;
-
 
 	CBigNumber cSave;
 	cSave.setNumber(*this);
@@ -596,7 +623,7 @@ void CBigNumber::Div(CBigNumber &cNumSource)
 	CBigNumber cTemp;
 	CBigNumber cTemp2;
 	CBigNumber cTemp3;
-	do
+	while (pValidCount > cNumSource.getValidCount())
 	{
 		cDiv.setNumber(0);
 		cDiv.SetValidCount(cNumSource.getValidCount());
@@ -651,8 +678,8 @@ void CBigNumber::Div(CBigNumber &cNumSource)
 			break;
 		}
 			
-	} while (pValidCount > cNumSource.getValidCount());
-	for (long lResu = 10000; lResu >= 10; lResu /= 10)
+	}
+	for (long lResu = 1000; lResu >= 10; lResu /= 10)
 	{
 		cTemp.setNumber(cNumSource);
 		cTemp.Mul(lResu);
@@ -687,7 +714,7 @@ void CBigNumber::Div(CBigNumber &cNumSource)
 	} while (true);
 
 	
-	/*
+	
 	printf("\r\n--------------------------------------\r\n");
 
 	printf("\r\n被除数为：\r\n");
@@ -708,7 +735,7 @@ void CBigNumber::Div(CBigNumber &cNumSource)
 	printf("\r\ns校验数为：\r\n");
 	cCheck.printResu();
 
-	*/
+	
 	setNumber(cResult);
 }
 
