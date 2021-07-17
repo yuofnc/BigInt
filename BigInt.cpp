@@ -177,26 +177,76 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 			//
 			//bResu.Mul(1000);
 			//bResu.printResu();	
+			bResu.setNumber(111793);
+			int i = 101;
+			
+			for (i = 1010; i < 3000; i++)
+			{
+				printf("\r\n%d\r\n", i);
+				bTemp.setNumber(bResu);
+				bTemp.printResu();
+				bResu.setNumber(bTemp);
+				bResu.Mul(i);
+				if (i == 1039)
+				{
+					int icheck = 1;
+				}
+				bResu.Div(i);
+				if (bResu.Sub(bTemp) == 0)
+				{
+					if ((bResu5.getValidCount() == 0) && (bResu5.pUsed[0] == 0))
+					{
+						printf("\r\n结果正确！\r\n");
+						bResu.setNumber(bTemp);
+						bResu.Mul(i);
+					}
+					else
+					{
+						printf("\r\n结果错误！\r\n");
+						break;
+					}
+
+				}
+				else
+				{
+					printf("\r\n结果错误！\r\n");
+					break;
+				}
+
+			}
+			
+			
+
 			
 			for (int i = 1; i < 300; i++)
 			{
 				bTest = true;
-				bResu6.setNumber(11571+i);
+				bResu6.setNumber(11571 + i);
 
-				for (int i = 1; i < 500; i++)
-					bResu6.Mul(i+ rand() % 10);
+				for (int i = 1; i < 531; i++)
+					bResu6.Mul(i + rand() % 10);
+				for (int i = 1; i < 531; i++)
+					bResu6.Mul(i + rand() % 10);
+				for (int i = 1; i < 531; i++)
+					bResu6.Mul(i + rand() % 10);
 				bResu6.Mul(519);
 				bResu6.Add(135);
-
+				bResu6.Add(133191);
 				bResu5.setNumber(bResu6);
 
 				bTemp.setNumber(379);
-				for(int k=1;k<30;k++)
-					bTemp.Mul(379+rand()%100);
+				for (int k = 1; k < 300; k++)
+					bTemp.Mul(379 + rand() % 100);
+				for (int k = 1; k < 300; k++)
+					bTemp.Mul(531 + rand() % 100);
+				for (int k = 1; k < 300; k++)
+					bTemp.Mul(679 + rand() % 100);
+				for (int k = 1; k < 200; k++)
+					bTemp.Add(rand() % 1000);
 				//for (int i = 0; i < 100; i++)
 				//	bTemp.Mul(i);
 				bResu2.setNumber(bResu5);
-				
+
 				bTest = true;
 				bResu5.setNumber(bResu2);
 				bResu5.Mul(bTemp);
@@ -215,7 +265,7 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 						bTest = false;
 						break;
 					}
-						
+
 				}
 				else
 				{
@@ -225,14 +275,16 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 					bResu5.Div(bTemp);
 					bTest = false;
 					break;
-				}					
+				}
 			}
-			
-			
+
+
 			if (!bTest)
 			{
 				printf("\r\n结果错误！\r\n");
 			}
+
+			
 		}
 	}
 	else
