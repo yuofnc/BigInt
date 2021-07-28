@@ -713,8 +713,7 @@ void CBigNumber::Div(CBigNumber &cNumSource)
 			
 	} while (true);
 
-	
-	
+	/*
 	printf("\r\n--------------------------------------\r\n");
 
 	printf("\r\n被除数为：\r\n");
@@ -735,6 +734,7 @@ void CBigNumber::Div(CBigNumber &cNumSource)
 	printf("\r\ns校验数为：\r\n");
 	cCheck.printResu();
 
+	*/	
 	
 	setNumber(cResult);
 }
