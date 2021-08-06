@@ -1,4 +1,4 @@
-// BigInt.cpp : å®šä¹‰æŽ§åˆ¶å°åº”ç”¨ç¨‹åºçš„å…¥å£ç‚¹ã€‚
+// BigInt.cpp : ¶¨Òå¿ØÖÆÌ¨Ó¦ÓÃ³ÌÐòµÄÈë¿Úµã¡£
 //
 
 #include "stdafx.h"
@@ -10,7 +10,7 @@
 #endif
 
 
-// å”¯ä¸€çš„åº”ç”¨ç¨‹åºå¯¹è±¡
+// Î¨Ò»µÄÓ¦ÓÃ³ÌÐò¶ÔÏó
 
 CWinApp theApp;
 
@@ -24,25 +24,25 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 
 	if (hModule != NULL)
 	{
-		// åˆå§‹åŒ– MFC å¹¶åœ¨å¤±è´¥æ—¶æ˜¾ç¤ºé”™è¯¯
+		// ³õÊ¼»¯ MFC ²¢ÔÚÊ§°ÜÊ±ÏÔÊ¾´íÎó
 		if (!AfxWinInit(hModule, NULL, ::GetCommandLine(), 0))
 		{
-			// TODO:  æ›´æ”¹é”™è¯¯ä»£ç ä»¥ç¬¦åˆæ‚¨çš„éœ€è¦
-			_tprintf(_T("é”™è¯¯:  MFC åˆå§‹åŒ–å¤±è´¥\n"));
+			// TODO:  ¸ü¸Ä´íÎó´úÂëÒÔ·ûºÏÄúµÄÐèÒª
+			_tprintf(_T("´íÎó:  MFC ³õÊ¼»¯Ê§°Ü\n"));
 			nRetCode = 1;
 		}
 		else
 		{
-			// TODO:  åœ¨æ­¤å¤„ä¸ºåº”ç”¨ç¨‹åºçš„è¡Œä¸ºç¼–å†™ä»£ç ã€‚
+			// TODO:  ÔÚ´Ë´¦ÎªÓ¦ÓÃ³ÌÐòµÄÐÐÎª±àÐ´´úÂë¡£
 			long iIN = 0;
 			
 			do
 			{
-				printf("1.è®¡ç®—7!\r\n");
-				printf("2.è®¡ç®—600!\r\n");
-				printf("3.è®¡ç®—n!\r\n");
+				printf("1.¼ÆËã7!\r\n");
+				printf("2.¼ÆËã600!\r\n");
+				printf("3.¼ÆËãn!\r\n");
 				scanf_s("%d", &iIN);
-				printf("ä½ å½•å…¥çš„æ˜¯ï¼š%d\r\n", iIN);
+				printf("ÄãÂ¼ÈëµÄÊÇ£º%d\r\n", iIN);
 
 			} while ((iIN > 3) || (iIN < 1));
 			int iCal = 0;
@@ -57,9 +57,9 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 			case 3:
 				do
 				{
-					printf("1.è®¡ç®—n!,è¯·å½•å…¥n\r\n");
+					printf("1.¼ÆËãn!,ÇëÂ¼Èën\r\n");
 					scanf_s("%ld", &iIN);
-					printf("ä½ å½•å…¥çš„æ˜¯ï¼š%ld\r\n", iIN);
+					printf("ÄãÂ¼ÈëµÄÊÇ£º%ld\r\n", iIN);
 
 				} while ((iIN < 1) || (iIN > 1000000));
 				iCal = iIN;
@@ -69,7 +69,7 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 			bResu.Add(1);
 			for (long i = 1; i <= iCal;i++)
 				bResu.Mul(i);	
-			printf("\r\næœ€åŽç»“æžœä¸º1ï¼š\r\n");
+			printf("\r\n×îºó½á¹ûÎª1£º\r\n");
 			
 			bResu.printResu();		
 			
@@ -79,10 +79,10 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 			for (long i = iCal + 1; i <= iCal + 12; i++)
 				bResu2.Mul(i);
 						
-			printf("\r\næœ€åŽç»“æžœä¸º2ï¼š\r\n");
+			printf("\r\n×îºó½á¹ûÎª2£º\r\n");
 			bResu2.printResu();			
 			
-			printf("\r\næœ€åŽç»“æžœä¸º2_Resuï¼š\r\n");
+			printf("\r\n×îºó½á¹ûÎª2_Resu£º\r\n");
 			bResu2.printResu();			
 
 			CBigNumber bResu3;
@@ -90,7 +90,7 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 			for (long i =  1; i <= iCal + 12; i++)
 				bResu3.Mul(i);
 
-			printf("\r\næœ€åŽç»“æžœä¸º3ï¼š\r\n");
+			printf("\r\n×îºó½á¹ûÎª3£º\r\n");
 			bResu3.printResu();
 			
 			
@@ -118,13 +118,13 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 			bResu5.Mul(196);
 			bResu5.Add(lMul);
 
-			printf("\r\né™¤æ•°ä¸ºï¼š\r\n");
+			printf("\r\n³ýÊýÎª£º\r\n");
 			bResu5.printResu();
 			bTemp.setNumber(bResu5);
 			bResu6.setNumber(bResu5);
 
 			bResu5.Div(lMul);
-			printf("\r\nç»“æžœä¸ºï¼š\r\n");
+			printf("\r\n½á¹ûÎª£º\r\n");
 			bResu5.printResu();
 
 			bResu5.Mul(lMul);
@@ -132,14 +132,14 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 			{
 			if (bResu6.getValidCount() > 0)
 			{
-			printf("\r\n%å‡ºé”™äº†ï¼š\r\n");
+			printf("\r\n%³ö´íÁË£º\r\n");
 			bResu6.printResu();
 			bTest = false;
 			break;
 			}
 			if (bResu6.pUsed[0] > 0)
 			{
-			printf("\r\n%å‡ºé”™äº†ï¼š\r\n");
+			printf("\r\n%³ö´íÁË£º\r\n");
 			bResu6.printResu();
 			bTest = false;
 			break;
@@ -147,27 +147,27 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 			}
 			else
 			{
-			printf("\r\n%å‡ºé”™äº†ï¼š\r\n");
+			printf("\r\n%³ö´íÁË£º\r\n");
 			bResu6.printResu();
 			bTest = false;
 			break;
 			}
 
-			printf("\r\n%ç»“æžœä¸ºï¼š\r\n");
+			printf("\r\n%½á¹ûÎª£º\r\n");
 			bResu5.printResu();
 			}
 			if (!bTest)
 			{
 			bResu5.setNumber(bTemp);
-			printf("\r\n%å‡ºé”™ç»“æžœä¸ºï¼š\r\n");
+			printf("\r\n%³ö´í½á¹ûÎª£º\r\n");
 			bResu5.printResu();
 
 			bResu5.Div(lMul);
-			printf("\r\né™¤ä»¥%dç»“æžœä¸ºï¼š\r\n",lMul);
+			printf("\r\n³ýÒÔ%d½á¹ûÎª£º\r\n",lMul);
 			bResu5.printResu();
 			bResu5.Mul(lMul);
 
-			printf("\r\n%è¿˜åŽŸç»“æžœä¸ºï¼š\r\n");
+			printf("\r\n%»¹Ô­½á¹ûÎª£º\r\n");
 			bResu5.printResu();
 
 
@@ -182,41 +182,40 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 			
 			for (i = 1010; i < 3000; i++)
 			{
-				printf("\r\n%d\r\n", i);
-				bTemp.setNumber(bResu);
-				bTemp.printResu();
-				bResu.setNumber(bTemp);
-				bResu.Mul(i);
-				if (i == 1039)
-				{
-					int icheck = 1;
-				}
-				bResu.Div(i);
-				if (bResu.Sub(bTemp) == 0)
-				{
-					if ((bResu5.getValidCount() == 0) && (bResu5.pUsed[0] == 0))
-					{
-						printf("\r\nç»“æžœæ­£ç¡®ï¼\r\n");
-						bResu.setNumber(bTemp);
-						bResu.Mul(i);
-					}
-					else
-					{
-						printf("\r\nç»“æžœé”™è¯¯ï¼\r\n");
-						break;
-					}
+			printf("\r\n%d\r\n", i);
+			bTemp.setNumber(bResu);
+			bTemp.printResu();
+			bResu.setNumber(bTemp);
+			bResu.Mul(i);
+			if (i == 1039)
+			{
+			int icheck = 1;
+			}
+			bResu.Div(i);
+			if (bResu.Sub(bTemp) == 0)
+			{
+			if ((bResu5.getValidCount() == 0) && (bResu5.pUsed[0] == 0))
+			{
+			printf("\r\n½á¹ûÕýÈ·£¡\r\n");
+			bResu.setNumber(bTemp);
+			bResu.Mul(i);
+			}
+			else
+			{
+			printf("\r\n½á¹û´íÎó£¡\r\n");
+			break;
+			}
 
-				}
-				else
-				{
-					printf("\r\nç»“æžœé”™è¯¯ï¼\r\n");
-					break;
-				}
+			}
+			else
+			{
+			printf("\r\n½á¹û´íÎó£¡\r\n");
+			break;
+			}
 
 			}
 			
 			
-
 			
 			for (int i = 1; i < 300; i++)
 			{
@@ -255,7 +254,7 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 				if (bResu5.Sub(bResu2) == 0)
 				{
 					if ((bResu5.getValidCount() == 0) && (bResu5.pUsed[0] == 0))
-						printf("\r\nç»“æžœæ­£ç¡®ï¼\r\n");
+						printf("\r\n½á¹ûÕýÈ·£¡\r\n");
 					else
 					{
 						bResu5.setNumber(bResu2);
@@ -281,7 +280,7 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 
 			if (!bTest)
 			{
-				printf("\r\nç»“æžœé”™è¯¯ï¼\r\n");
+				printf("\r\n½á¹û´íÎó£¡\r\n");
 			}
 
 			
@@ -289,8 +288,8 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 	}
 	else
 	{
-		// TODO:  æ›´æ”¹é”™è¯¯ä»£ç ä»¥ç¬¦åˆæ‚¨çš„éœ€è¦
-		_tprintf(_T("é”™è¯¯:  GetModuleHandle å¤±è´¥\n"));
+		// TODO:  ¸ü¸Ä´íÎó´úÂëÒÔ·ûºÏÄúµÄÐèÒª
+		_tprintf(_T("´íÎó:  GetModuleHandle Ê§°Ü\n"));
 		nRetCode = 1;
 	}
 
@@ -303,11 +302,11 @@ void testCase1()
 
 	do
 	{
-		printf("1.è®¡ç®—7!\r\n");
-		printf("2.è®¡ç®—600!\r\n");
-		printf("3.è®¡ç®—n!\r\n");
+		printf("1.¼ÆËã7!\r\n");
+		printf("2.¼ÆËã600!\r\n");
+		printf("3.¼ÆËãn!\r\n");
 		scanf_s("%d", &iIN);
-		printf("ä½ å½•å…¥çš„æ˜¯ï¼š%d\r\n", iIN);
+		printf("ÄãÂ¼ÈëµÄÊÇ£º%d\r\n", iIN);
 
 	} while ((iIN > 3) || (iIN < 1));
 	int iCal = 0;
@@ -322,9 +321,9 @@ void testCase1()
 	case 3:
 		do
 		{
-			printf("1.è®¡ç®—n!,è¯·å½•å…¥n\r\n");
+			printf("1.¼ÆËãn!,ÇëÂ¼Èën\r\n");
 			scanf_s("%ld", &iIN);
-			printf("ä½ å½•å…¥çš„æ˜¯ï¼š%ld\r\n", iIN);
+			printf("ÄãÂ¼ÈëµÄÊÇ£º%ld\r\n", iIN);
 
 		} while ((iIN < 1) || (iIN > 1000000));
 		iCal = iIN;
@@ -334,15 +333,15 @@ void testCase1()
 	bResu.Add(1);
 	for (long i = 1; i <= iCal; i++)
 		bResu.Mul(i);
-	printf("æœ€åŽç»“æžœä¸ºï¼š\r\n");
+	printf("×îºó½á¹ûÎª£º\r\n");
 	bResu.printResu();
 	CBigNumber bResu2;
 	bResu2.Add(1);
 	for (long i = 1; i <= iCal; i++)
 		bResu2.Mul(i);
-	printf("æœ€åŽç»“æžœä¸ºï¼š\r\n");
+	printf("×îºó½á¹ûÎª£º\r\n");
 	bResu2.printResu();
 	bResu.Add(bResu2);
-	printf("æœ€åŽç»“æžœä¸ºï¼š\r\n");
+	printf("×îºó½á¹ûÎª£º\r\n");
 	bResu.printResu();
 }
