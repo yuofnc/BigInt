@@ -495,7 +495,7 @@ void  CBigNumber::Div(unsigned long lDiv)
 			ZeroMemory((char *)pUsed + (pValidCount)*sizeof(unsigned long), (CNumberProc.getValidCount() + 2)*sizeof(unsigned long));
 			uCalSource = ConvNumber(cNumber2);
 			uCalDest = ConvNumber(CNumberProc);
-			iDiv = uCalSource / uCalDest;
+			iDiv = uCalSource / (uCalDest+1);
 		}
 		else
 		{
@@ -505,7 +505,7 @@ void  CBigNumber::Div(unsigned long lDiv)
 			lSource = pValidCount;
 			uCalSource = ConvNumber(cNumber2);
 			uCalDest = ConvNumber(CNumberProc);
-			iDiv = uCalSource / uCalDest;
+			iDiv = uCalSource / (uCalDest+1);
 		}
 
 
@@ -623,18 +623,31 @@ void CBigNumber::Div(CBigNumber &cNumSource)
 	CBigNumber cTemp;
 	CBigNumber cTemp2;
 	CBigNumber cTemp3;
-	while (pValidCount > cNumSource.getValidCount())
+	cDiv.setNumber(0);
+	cDiv.SetValidCount(cNumSource.getValidCount());
+	long lBit = cNumSource.getValidCount();
+
+	for (int i = 0; i <= 1; i++)
 	{
-		cDiv.setNumber(0);
-		cDiv.SetValidCount(cNumSource.getValidCount());
-		long lBit = cNumSource.getValidCount();
+		cDiv.pUsed[lBit] = cNumSource.pUsed[lBit];
+		lBit--;
+	}
+	unsigned long lCalDest = 0;
+	lCalDest = 0;
+	lBit = cDiv.getValidCount();
+	for (int i = 0; i <= 1; i++)
+	{
+		lCalDest *= MAXITEM;
 
-		for (int i = 0; i <= 1; i++)
+		lCalDest += cDiv.pUsed[lBit];
+		if (i == 0)
 		{
-			cDiv.pUsed[lBit] = cNumSource.pUsed[lBit];
-			lBit--;
+			lCalDest += 1;
 		}
-
+		lBit--;
+	}
+	while (pValidCount > cNumSource.getValidCount())
+	{		
 		unsigned long lCalSource = 0;
 		lBit = pValidCount;
 		for (int i = 0; i <= 2; i++)
@@ -643,20 +656,7 @@ void CBigNumber::Div(CBigNumber &cNumSource)
 			lCalSource += pUsed[lBit];
 			lBit--;
 		}
-		unsigned long lCalDest = 0;
-		lCalDest = 0;
-		lBit = cDiv.getValidCount();
-		for (int i = 0; i <= 1; i++)
-		{
-			lCalDest *= MAXITEM;
-			if (i == 1)
-			{
-				lCalDest += 999;
-			}
-			else
-				lCalDest += cDiv.pUsed[lBit];
-			lBit--;
-		}
+		
 		//除最高位
 		long lResu = lCalSource / lCalDest;		
 		cTemp.setNumber(cNumSource);
@@ -733,9 +733,7 @@ void CBigNumber::Div(CBigNumber &cNumSource)
 
 	printf("\r\ns校验数为：\r\n");
 	cCheck.printResu();
-
-	*/	
-	
+	*/
 	setNumber(cResult);
 }
 
